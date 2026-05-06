@@ -6,7 +6,7 @@ export class VehiclesController {
   constructor(private readonly vehiclesService: VehiclesService) {}
 
   @Get()
-  getVehiclesAll() {
+  findAll() {
     return 'Todos los behiculos';
   }
 

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateVehicleDto } from '../dto/vehicles.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Vehicle } from '../entities/vehicle.entity';
@@ -12,16 +12,25 @@ export class VehiclesService {
   ) {}
 
   async create(createVehicleDto: CreateVehicleDto) {
-    console.log('Datos listos para guardar:', createVehicleDto);
+    try {
+      console.log('Datos listos para guardar:', createVehicleDto);
 
-    const newVehicle = this.vehicleRepository.create(createVehicleDto);
+      const newVehicle = this.vehicleRepository.create(createVehicleDto);
 
-    await this.vehicleRepository.save(newVehicle);
+      await this.vehicleRepository.save(newVehicle);
 
-    return newVehicle;
+      return newVehicle;
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException('Error al crear vehiculo');
+    }
   }
-
-  findAll() {
-    return 'Lista de vehiculos';
+  async findAll() {
+    try {
+      return await this.vehicleRepository.find();
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException('error al encontrar los vehicles');
+    }
   }
 }

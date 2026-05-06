@@ -7,9 +7,9 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity('vehicles')
 export class Vehicle {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('increment')
   id!: number;
 
   @Column({ type: 'int4' })
