@@ -1,9 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { Brand } from '../entities/brand.entity';
-import { CreateBrandDto } from '../dto/brand.dto';
-import { UpdateBrandDto } from '../dto/brand.dto';
+import { Repository } from 'typeorm';
+import { CreateBrandDto, UpdateBrandDto } from '../dto/brand.dto';
 
 @Injectable()
 export class BrandsService {
@@ -21,23 +20,22 @@ export class BrandsService {
     return await this.brandRepository.find();
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<Brand> {
     const brand = await this.brandRepository.findOneBy({ id });
-    if (!brand) throw new NotFoundException(`Brand with id ${id} not found`);
+    if (!brand) {
+      throw new NotFoundException(`Brand con id ${id} no encontrado`);
+    }
     return brand;
   }
 
-  async update(id: number, updateBrandDto: UpdateBrandDto) {
-    const brand = await this.brandRepository.preload({
-      id: id,
-      ...updateBrandDto,
-    });
-    if (!brand) throw new NotFoundException(`Brand with id ${id} not found`);
-    return this.brandRepository.save(brand);
+  async update(id: number, updateBrandDto: UpdateBrandDto): Promise<Brand> {
+    const brand = await this.findOne(id);
+    Object.assign(brand, updateBrandDto);
+    return await this.brandRepository.save(brand);
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<void> {
     const brand = await this.findOne(id);
-    return await this.brandRepository.remove(brand);
+    await this.brandRepository.remove(brand);
   }
 }

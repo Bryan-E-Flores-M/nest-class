@@ -1,44 +1,51 @@
 import {
-  Entity,
   Column,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
-  UpdateDateColumn,
   DeleteDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
+import { VehicleModel } from '../../models/entities/vehicle-model.entity';
 
 @Entity('vehicles')
 export class Vehicle {
-  @PrimaryGeneratedColumn('increment')
-  id!: number;
+  @PrimaryGeneratedColumn('increment', { type: 'int4' })
+  id: number;
 
   @Column({ type: 'int4' })
-  model_id!: number;
+  model_id: number;
 
   @Column({ type: 'varchar', length: 50 })
-  vin!: string;
+  vin: string;
 
   @Column({ type: 'int4' })
-  year!: number;
+  year: number;
 
   @Column({ type: 'varchar', length: 50 })
-  color!: string;
+  color: string;
 
   @Column({ type: 'int4', default: 0 })
-  milage!: number;
+  mileage: number;
 
-  @Column({ type: 'float8' })
-  price!: number;
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  price: number;
 
   @Column({ type: 'varchar', length: 50 })
-  status!: string;
+  status: string;
 
-  @CreateDateColumn({ type: 'timestamp' })
-  created_at!: Date;
+  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  created_at: Date;
 
-  @UpdateDateColumn({ type: 'timestamp' })
-  updated_at!: Date;
+  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  updated_at: Date;
 
   @DeleteDateColumn({ type: 'timestamp', nullable: true })
-  deleted_at!: Date;
+  deleted_at: Date;
+
+  @ManyToOne(() => VehicleModel, { eager: true })
+  @JoinColumn({ name: 'model_id' })
+  model: VehicleModel;
 }
