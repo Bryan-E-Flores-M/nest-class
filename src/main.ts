@@ -14,13 +14,13 @@ async function bootstrap() {
     }),
   );
 
-  const confg = new DocumentBuilder()
-    .setTitle('Api_de_Auto_Sale')
-    .setDescription('Api de Auto Sale')
+  const config = new DocumentBuilder()
+    .setTitle('API de AutoSale')
+    .setDescription('API para la gestión de vehículos en AutoSale')
     .setVersion('1.0')
     .build();
 
-  const document = SwaggerModule.createDocument(app, confg);
+  const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
   await app.listen(process.env.PORT ?? 3000);

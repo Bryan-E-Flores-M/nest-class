@@ -5,25 +5,26 @@ import {
   IsPositive,
   IsString,
   MinLength,
+  IsOptional,
 } from 'class-validator';
 
 export class CreateVehicleModelDto {
   @IsInt()
   @IsPositive()
   @IsNotEmpty()
-  @ApiProperty()
-  brand_id!: number;
+  @ApiProperty({ example: 1 })
+  brand_id: number;
 
   @IsString()
   @IsNotEmpty()
   @MinLength(2)
   @ApiProperty({ example: 'Corrolla' })
-  name!: string;
+  name: string;
 
   @IsString()
-  @IsNotEmpty()
   @MinLength(2)
+  @IsOptional()
   @ApiProperty({ example: 'Sedan' })
-  type!: string;
+  type?: string;
 }
 export class UpdateVehicleModelDto extends PartialType(CreateVehicleModelDto) {}
