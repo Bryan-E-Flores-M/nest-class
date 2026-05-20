@@ -6,12 +6,12 @@ export class CreateCustomerDto {
   @IsNotEmpty()
   @MinLength(3)
   @ApiProperty({ example: 'Juan Pérez' })
-  name: string;
+  name!: string;
 
   @IsEmail()
   @IsNotEmpty()
   @ApiProperty({ example: 'juan.perez@example.com' })
-  email: string;
+  email!: string;
 
   @IsString()
   @IsOptional()

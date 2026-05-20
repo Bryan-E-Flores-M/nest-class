@@ -1,55 +1,93 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { CreateSaleDto,UpdateSaleDto,} from '../dto/sales.dto';
 import { Sale } from '../entities/sales.entity';
-import { CreateSaleDto } from '../dto/sales.dto';
-import { Vehicle } from '../../vehicles/entities/vehicle.entity';
-import { Customer } from '../../customers/entities/customers.entity';
-
+import { Repository } from 'typeorm';
 @Injectable()
 export class SalesService {
+
   constructor(
     @InjectRepository(Sale)
-    private readonly saleRepository: Repository<Sale>,
-
-    @InjectRepository(Vehicle)
-    private readonly vehicleRepository: Repository<Vehicle>,
-
-    @InjectRepository(Customer)
-    private readonly customerRepository: Repository<Customer>,
+    private readonly salesRepository: Repository<Sale>,
   ) {}
 
-  async create(createSaleDto: CreateSaleDto) {
-    
-    const { customer_id, vehicle_id, total } = createSaleDto;
-
-    
-    const customer = await this.customerRepository.findOne({ where: { id: customer_id } });
-    if (!customer) throw new NotFoundException(`Cliente con ID ${customer_id} no encontrado`);
-
-    
-    const vehicle = await this.vehicleRepository.findOne({ where: { id: vehicle_id } });
-    if (!vehicle) throw new NotFoundException(`Vehículo con ID ${vehicle_id} no encontrado`);
-    if (vehicle.status === 'sold') {
-      throw new BadRequestException('Este vehículo ya ha sido vendido');
+  async create(createSalesDto: CreateSaleDto) {
+    try {
+      const newSale =
+        this.salesRepository.create(
+          createSalesDto,
+        );
+      await this.salesRepository.save(
+        newSale,
+      );
+      return newSale;
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(
+        'Error al crear venta',
+      );
     }
-
-    
-    const sale = this.saleRepository.create({
-      customer_id,
-      vehicle_id,
-      total,
-    });
-    const savedSale = await this.saleRepository.save(sale);
-
-    
-    vehicle.status = 'sold';
-    await this.vehicleRepository.save(vehicle);
-
-    return savedSale;
   }
 
   async findAll() {
-    return await this.saleRepository.find();
+    try {
+      return await this.salesRepository.find();
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(
+        'Error al encontrar ventas',
+      );
+    }
+  }
+
+  async findOne(id: number) {
+    try {
+      return await this.salesRepository.findOneBy({
+        id,
+      });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(
+        'Error al encontrar venta',
+      );
+    }
+  }
+
+  async update(
+    id: number,
+    updateSalesDto: UpdateSaleDto,
+  ) {
+    try {
+      await this.salesRepository.update(
+        id,
+        updateSalesDto,
+      );
+      return this.findOne(id);
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(
+        'Error al actualizar venta',
+      );
+    }
+  }
+
+  async remove(id: number) {
+    try {
+      const sale = await this.findOne(id);
+      if (sale) {
+        return await this.salesRepository.remove(
+          sale,
+        );
+      }
+      return null;
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(
+        'Error al eliminar venta',
+      );
+    }
   }
 }
