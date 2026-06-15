@@ -4,6 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { Auth } from './decorators/auth.decorator';
 import { ValidRoles } from './interfaces/valid-roles.interface';
+import { AuthPermission } from './decorators/auth-permission.decorator';
 
 @Controller('auth')
 export class AuthController{
@@ -19,8 +20,8 @@ export class AuthController{
     return this.authService.login(loginUserDto);
   }
 
-  @Get('private-route')
-  @Auth(ValidRoles.admin)
+  @Get('vehicles/create-test')
+  @AuthPermission('create-vehicle')
   testingPrivateRoute() {
     return {
       ok: true,
